@@ -36,16 +36,21 @@ public class CRC32 {
             0xb3667a2e, 0xc4614ab8, 0x5d681b02, 0x2a6f2b94, 0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d,
     };
 
-    public static byte[] calculate(byte[] bytes) {
-        int crc = 0xffffffff;
-        for (byte b : bytes) {
-            crc = (crc >>> 8) ^ TABLE[(crc ^ b) & 0xff];
+    public static byte[] calculate(byte[] data) {
+        int crc32val = 0;
+        for (int i = 0; i < data.length; i++) {
+            crc32val = TABLE[(crc32val ^ data[i]) & 0xFF] ^ (crc32val >> 8);
         }
-        crc = ~crc;
-        return new byte[]{
-                (byte) (crc >>> 24),
-                (byte) (crc >>> 16),
-                (byte) (crc >>> 8),
-                (byte) crc};
+        return writeUInt32(crc32val);
+    }
+
+
+    public static byte[] writeUInt32(int numero) {
+        byte[] b = new byte[4];
+        b[0] = (byte) (numero & 0xFF);
+        b[1] = (byte) ((numero >> 8) & 0xFF);
+        b[2] = (byte) ((numero >> 16) & 0xFF);
+        b[3] = (byte) ((numero >> 24) & 0xFF);
+        return b;
     }
 }
