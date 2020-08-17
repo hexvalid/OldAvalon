@@ -5,15 +5,16 @@ public class JV {
     private static final short R_KEY = 2157;
     private static final short R_KEY_M = 2171;
 
-    public static byte[] xorKey(byte[] publicKey) {
-        byte[] xorKey = new byte[8];
+    private byte[] xorKey;
+
+    public JV(byte[] publicKey) {
+        this.xorKey = new byte[8];
         for (int i = 0; i < 8; i++) {
-            xorKey[i] = (byte) (publicKey[i] ^ PRIVATE_KEY[i]);
+            this.xorKey[i] = (byte) (publicKey[i] ^ PRIVATE_KEY[i]);
         }
-        return xorKey;
     }
 
-    public static byte[] encryptionFast(byte[] data, byte[] xorKey) {
+    public byte[] encryptionFast(byte[] data) {
         int length = data.length;
         byte[] result = new byte[length];
         int lKey, rsk;
@@ -21,9 +22,10 @@ public class JV {
         lKey = (length * 157) & 0xFF;
         for (int i = 0; i < length; i++) {
             rsk = (rKey >> 8) & 0xFF;
-            result[i] = (byte) (((data[i] ^ rsk) ^ (int) xorKey[(i % 8)]) ^ lKey);
+            result[i] = (byte) (((data[i] ^ rsk) ^ (int) this.xorKey[(i % 8)]) ^ lKey);
             rKey *= R_KEY_M;
         }
         return result;
     }
+
 }
