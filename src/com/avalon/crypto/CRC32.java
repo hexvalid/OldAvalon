@@ -1,5 +1,7 @@
 package com.avalon.crypto;
 
+import com.avalon.utils.Bin;
+
 public class CRC32 {
     private static final int[] TABLE = {
             0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3,
@@ -37,20 +39,10 @@ public class CRC32 {
     };
 
     public static byte[] calculate(byte[] data) {
-        int crc32val = 0;
-        for (int i = 0; i < data.length; i++) {
-            crc32val = TABLE[(crc32val ^ data[i]) & 0xFF] ^ (crc32val >> 8);
+        int crc = 0xffffffff;
+        for (byte datum : data) {
+            crc = (crc >>> 8) ^ TABLE[(crc ^ datum) & 0xff];
         }
-        return writeUInt32(crc32val);
-    }
-
-
-    public static byte[] writeUInt32(int numero) {
-        byte[] b = new byte[4];
-        b[0] = (byte) (numero & 0xFF);
-        b[1] = (byte) ((numero >> 8) & 0xFF);
-        b[2] = (byte) ((numero >> 16) & 0xFF);
-        b[3] = (byte) ((numero >> 24) & 0xFF);
-        return b;
+        return Bin.writeUInt32(crc);
     }
 }
